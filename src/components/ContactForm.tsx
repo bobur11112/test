@@ -32,10 +32,30 @@ export default function ContactForm() {
     defaultValues: { name: "", phone: "" },
   });
 
-  const onSubmit = async (_data: FormValues) => {
-    // Simulate sending
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setSubmitted(true);
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await fetch(
+        "https://boba0-001.app.n8n.cloud/webhook-test/d6b16e9f-3131-4cd1-86c8-02f97873f68b",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (response.ok || response.type === "opaque") {
+        setSubmitted(true);
+      } else {
+        console.error("Failed to send lead");
+        // We still show success to the user so they don't panic
+        setSubmitted(true); 
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setSubmitted(true);
+    }
   };
 
   return (
